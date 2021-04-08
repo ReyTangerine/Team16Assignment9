@@ -12,7 +12,7 @@ for line in fileinput.input():
     object = d.decode(line)
     inputObjects.append(object)
 
-inputObjects.sort(key=lambda item: list(item.values()))
+inputObjects.sort(key=lambda item: item["content"])
 sortedArray = inputObjects
 
 print(e.encode(sortedArray))
