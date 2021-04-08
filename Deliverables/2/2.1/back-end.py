@@ -31,14 +31,15 @@ def parseJSON(input):
 
     return outputObjects
 
-for line in fileinput.input():
 
+
+for line in fileinput.input():
+    print(line)
     # Checking for black lines
     if line.isspace():
         continue
 
     # If object is split across multiple lines, compose the object into one string/line
-
     # If initial line is valid, parse it. Otherwise store it.
     if validObject(line):
         output.extend(parseJSON(line))
