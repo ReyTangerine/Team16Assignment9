@@ -49,6 +49,8 @@ def FrontendProcessing(file):
     output = []
     mainOutput = []
     intermediateObject = ""
+    output.extend(parseJSON(str))
+    """
     for line in file:
         # Checking for black lines
         if line.isspace():
@@ -73,6 +75,7 @@ def FrontendProcessing(file):
                 intermediateObject = ""
         else:
             pass
+    """
     # Verify all keys are "content"
     output = [object for object in output if list(object.keys())[0] == "content"]
     ## Splitting the list into lists of ten
@@ -115,4 +118,6 @@ def FrontendProcessing(file):
     print(e.encode(mainOutput))
     return(e.encode(mainOutput))
 
-FrontendProcessing(fileinputted)
+str = sys.stdin.read()
+
+FrontendProcessing(str)
