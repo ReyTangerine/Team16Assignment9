@@ -47,7 +47,6 @@ for line in fileinput.input():
     if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1): #and countCurly(line) + countCurly(intermediateObject) :
         pass
     elif validObject(line):
-        print(line, "line")
         output.extend(parseJSON(line))
     else:
         pass
@@ -56,7 +55,6 @@ for line in fileinput.input():
     if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1):
         intermediateObject = intermediateObject + line
     elif validObject(intermediateObject):
-        print(intermediateObject, "intermediateObject")
         output.extend(parseJSON(intermediateObject))
         intermediateObject = ""
     else:
