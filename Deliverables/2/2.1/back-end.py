@@ -1,5 +1,6 @@
 import json
 import fileinput
+import sys
 
 output = []
 intermediateObject = ""
@@ -37,32 +38,34 @@ def parseJSON(input):
     return outputObjects
 
 
+str = sys.stdin.read()
 
-for line in fileinput.input():
-    # Checking for black lines
-    if line.isspace():
-        continue
-    # If object is split across multiple lines, compose the object into one string/line
-    # If initial line is valid, parse it. Otherwise store it (in intermediateObject).
-    if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1): #and countCurly(line) + countCurly(intermediateObject) :
-        pass
-    elif validObject(line):
-        output.extend(parseJSON(line))
-        continue
-    else:
-        pass
-
-    # If intermediateObject + the new line is valid, parse it, otherwise get the next line.
-    if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1):
-        intermediateObject = intermediateObject + line
-    elif validObject(intermediateObject):
-        output.extend(parseJSON(intermediateObject))
-        intermediateObject = ""
-    else:
-        intermediateObject = intermediateObject + line
-
-if validObject(intermediateObject):
-    output.extend(parseJSON(intermediateObject))
+output.extend(parseJSON(str))
+# for line in fileinput.input():
+#     # Checking for black lines
+#     if line.isspace():
+#         continue
+#     # If object is split across multiple lines, compose the object into one string/line
+#     # If initial line is valid, parse it. Otherwise store it (in intermediateObject).
+#     if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1):
+#         pass
+#     elif validObject(line):
+#         output.extend(parseJSON(line))
+#         continue
+#     else:
+#         pass
+#
+#     # If intermediateObject + the new line is valid, parse it, otherwise get the next line.
+#     if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1):
+#         intermediateObject = intermediateObject + line
+#     elif validObject(intermediateObject):
+#         output.extend(parseJSON(intermediateObject))
+#         intermediateObject = ""
+#     else:
+#         intermediateObject = intermediateObject + line
+#
+# if validObject(intermediateObject):
+#     output.extend(parseJSON(intermediateObject))
 
 # Verify all keys are "content"
 output = [object for object in output if list(object.keys())[0] == "content"]
