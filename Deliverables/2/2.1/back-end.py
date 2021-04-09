@@ -48,6 +48,7 @@ for line in fileinput.input():
         pass
     elif validObject(line):
         output.extend(parseJSON(line))
+        continue
     else:
         pass
 
