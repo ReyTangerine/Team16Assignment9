@@ -6,8 +6,13 @@ intermediateObject = ""
 d = json.JSONDecoder()
 e = json.JSONEncoder()
 
+def countCurly(string):
+    stringaslist = list(string)
+    return stringaslist.count("{") + stringaslist.count("}")
+
 def validObject(content):
-    if "{" in content and "}" in content:
+    contentList = list(content)
+    if "{" in content and "}" in content and contentList.count("}") == contentList.count("{"):
         return True
     else:
         return False
@@ -34,24 +39,31 @@ def parseJSON(input):
 
 
 for line in fileinput.input():
-    print(line)
     # Checking for black lines
     if line.isspace():
         continue
-
     # If object is split across multiple lines, compose the object into one string/line
-    # If initial line is valid, parse it. Otherwise store it.
-    if validObject(line):
+    # If initial line is valid, parse it. Otherwise store it (in intermediateObject).
+    if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1): #and countCurly(line) + countCurly(intermediateObject) :
+        pass
+    elif validObject(line):
+        print(line, "line")
         output.extend(parseJSON(line))
     else:
-        intermediateObject = intermediateObject + line
+        pass
 
-    # If the stored object + the new line is valid, parse it, otherwise get the next line.
-    if validObject(intermediateObject):
+    # If intermediateObject + the new line is valid, parse it, otherwise get the next line.
+    if ((countCurly(line) + countCurly(intermediateObject)) % 2 == 1):
+        intermediateObject = intermediateObject + line
+    elif validObject(intermediateObject):
+        print(intermediateObject, "intermediateObject")
         output.extend(parseJSON(intermediateObject))
         intermediateObject = ""
     else:
-        pass
+        intermediateObject = intermediateObject + line
+
+if validObject(intermediateObject):
+    output.extend(parseJSON(intermediateObject))
 
 # Verify all keys are "content"
 output = [object for object in output if list(object.keys())[0] == "content"]
