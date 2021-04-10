@@ -34,7 +34,7 @@ def parseJSON(input):
     # Since each dict ends with "}", split on it and remove the last trailing \n.
     # Then add the "}" back in.
     parsedJSON = json.loads(json.dumps(input)).split("}")
-    print(str(parsedJSON))
+    #print(str(parsedJSON))
 
     # Removing Empty elements in the dictionary
     parsedJSON.pop()
@@ -45,7 +45,7 @@ def parseJSON(input):
     # Since some jerks added in characters for each line between the dictionary entries
     # We need to remove those characters (now in the start of the parsedJSON list entries)
     # We can remove these bad boys by eliminating tokens that aren't '['
-    for parsedTokenNumber in range(len(parsedJSON)- 1):
+    for parsedTokenNumber in range(len(parsedJSON) - 1):
         if parsedJSON[parsedTokenNumber] != '{':
             newString = string_cleaner(parsedJSON[parsedTokenNumber])
             parsedJSON[parsedTokenNumber] = newString
