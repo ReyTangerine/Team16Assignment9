@@ -1,7 +1,6 @@
 import json
 import sys
 
-output = []
 intermediateObject = ""
 d = json.JSONDecoder()
 e = json.JSONEncoder()
@@ -36,14 +35,15 @@ def parseJSON(input):
 
     return outputObjects
 
-str = sys.stdin.read()
-
-def BackendProcessing(file):
-    output.extend(parseJSON(file))
-
+def BackendProcessingMain(file):
+    #print("This is inside Backendprocessing: " + str(file))
+    listing = []
+    listing.extend(parseJSON(file))
     # Verify all keys are "content"
-    output = [object for object in output if list(object.keys())[0] == "content"]
+    listing = [object for object in listing if list(object.keys())[0] == "content"]
+    print(e.encode(BackendProcessingOfList(listing)))
+
+def BackendProcessingOfList(output):
     output.sort(key=lambda item: item["content"])
     sortedArray = output
-
-    print(e.encode(sortedArray))
+    return(sortedArray)
