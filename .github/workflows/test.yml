@@ -12,13 +12,13 @@ jobs:
 
     env:
 
-      MAJOR: 2
+      MAJOR: 3
 
-      MINOR: 2
+      MINOR: 1
 
       TEAM: team16
 
-      LOGLEVEL: debug # Valid options are: error | info | debug
+      LOGLEVEL: error # Valid options are: error | info | debug
 
     steps:
 
