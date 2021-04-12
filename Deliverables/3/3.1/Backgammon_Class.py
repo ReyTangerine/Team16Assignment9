@@ -8,6 +8,7 @@ class BackgammonBoard:
     self.White_Pos is a list of white positions
     self.listofActions is the remaining list of actions required
     self.query is a list of the query in case it's a query-type request
+    self.answer is a dictionary OR string with the correct query/answer
     """
 
     ### In order to initialize the Backgammon Board, pass in a dictionary, with one key "request" to the value of
@@ -56,7 +57,7 @@ class BackgammonBoard:
         self.moving()
         #print("Solving all the way for the new board.")
         #print("This is the new board: " + "\n" + str(self.returning_board()))
-        return(self.returning_board())
+        self.answer = self.returning_board()
 
     def ends_with_query(self):
         self.moving()
@@ -69,9 +70,9 @@ class BackgammonBoard:
         Contracts.string_contract(self.query[0])
         Contracts.whole_number_contract(self.query[1])
         if self.query[0] == "black":
-            return(self.Black_Pos[self.query[1]])
+            self.answer = self.Black_Pos[self.query[1]]
         elif self.query[0] == "white":
-            return(self.White_Pos[self.query[1]])
+            self.answer = self.White_Pos[self.query[1]]
 
     ### Through the listofActions, we move around pieces until we finally reach the end of the action set
     ### returns nothing
@@ -105,7 +106,6 @@ class BackgammonBoard:
                 self.White_Pos[newPos] = newPosValue
                 oldPosValue = self.White_Pos[oldPos] - 1
                 self.White_Pos[oldPos] = oldPosValue
-
 
     def returning_board(self):
         BlackList = []
@@ -143,7 +143,11 @@ class BackgammonBoard:
         Contracts.dict_contract(currBoard)
         return(currBoard)
 
+    def solve(self):
+        return(self.answer)
+
 ### Testing Cases
 #BGDict = {"ends-with-query":[{"black":["bar",1,1,1,1,2,3,4,4,5,5,23,24,"home","home"],"white":["bar",1,2,3,15,16,18,18,20,20,20,22,23,24,"home"]},["black","home",1],["black","home",1],["white","home","bar"],["white",24,23], ["white",24]]}
 #BG_Instance = BackgammonBoard(BGDict)
-#BG_Instance.returning_board()
+#answer = BG_Instance.solve()
+#print(str(answer))
