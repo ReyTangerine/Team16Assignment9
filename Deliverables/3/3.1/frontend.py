@@ -9,4 +9,5 @@ str = sys.stdin.read()
 input = d.decode(str)
 
 board = BackgammonBoard(input)
-print(e.encode(board.answer))
+
+print(e.encode(board.solve()))
