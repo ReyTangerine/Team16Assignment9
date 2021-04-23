@@ -3,11 +3,10 @@ class Real_Backgammon_Board:
     """
     self.Black_Pos is a list of black positions
     self.White_Pos is a list of white positions
-    self.listofTurnInfo is a 3-item list of turn based information [color, dice, turn], used in self.moving(), which:
-        color: 'white' | 'black'
-        dice: [die, die] | [die, die, die, die]
+    self.color: 'white' | 'black'
+    self.dice: [die, die] | [die, die, die, die]
         die: 1 | 2 | 3 | 4 | 5 | 6
-        turn: [[cpos, cpos], ...]
+    self.turns: [[cpos, cpos], ...]
     self.solution is True | False
 
     self.init(self, board, turnInfo) initializes the self.Black_Pos, self.White_Pos, and self.listofTurnInfo
@@ -25,9 +24,19 @@ class Real_Backgammon_Board:
         ## Filling up the different player lists with the appropriate piece positions
         self.Black_Pos = [0 for i in range(26)]
         self.White_Pos = [0 for i in range(26)]
-        self.listofActions = self.parse_moves(turnInfo)
+        self.color = turnInfo[0]
+        self.dice = turnInfo[1]
+        self.turns = turnInfo[2]
 
-        if self.valid_move(board, turnInfo):
+        ### These next steps are essentially cleaning up the board
+        ### We reorder the Black moves since they're in descending order
+        ### We also change the strings of the positions to their integral equivalents according to color
+
+        newTurns = self.turnsCleanUp(self.turns)
+        self.turns = newTurns
+        self.listofActions = self.parse_moves()
+
+        if self.valid_move(board):
             self.moving()
             self.solution = True
         else:
@@ -35,9 +44,9 @@ class Real_Backgammon_Board:
 
         for entry in (board["black"]):
             if entry == "bar":
-                entry = 0
-            elif entry == "home":
                 entry = 25
+            elif entry == "home":
+                entry = 0
             totalBlackCheckers = self.Black_Pos[entry] + 1
             self.Black_Pos[entry] = totalBlackCheckers
         for entry in (board["white"]):
@@ -47,9 +56,7 @@ class Real_Backgammon_Board:
                 entry = 25
             totalWhiteCheckers = self.White_Pos[entry] + 1
             self.White_Pos[entry] = totalWhiteCheckers
-        self.listofTurnInfo = turnInfo
 
-    ### THIS IS INCOMPLETE AS WE STILL HAVE NOT IMPLEMENTED THE RULE ENGINE
     ### Through the listofTurns, we move around pieces until we finally reach the end of the action set
     ### returns nothing
     def moving(self):
@@ -57,15 +64,6 @@ class Real_Backgammon_Board:
             newAction = self.listofActions.pop()
             oldPos = newAction[1]
             newPos = newAction[2]
-            ### Turning position strings into ints
-            if oldPos == "bar":
-                oldPos = 0
-            elif oldPos == "home":
-                oldPos = 25
-            if newPos == "bar":
-                newPos = 0
-            elif newPos == "home":
-                newPos = 25
             ### Moving black's pieces
             if newAction[0] == "black":
                 newPosValue = self.Black_Pos[newPos] + 1
@@ -90,19 +88,28 @@ class Real_Backgammon_Board:
     def returning_board(self):
         BlackList = []
         WhiteList = []
+        blackHomeCount = 0
         ### Reformatting the list of black checkers into the JSON list format...
         for x in range(len(self.Black_Pos)):
             if self.Black_Pos[x] == 0:
                 pass
             else:
-                if x == 0:
+                if x == 25:
                     checkerPos = "bar"
-                elif x == 25:
+                elif x == 0:
                     checkerPos = "home"
                 else:
                     checkerPos = x
                 for checkerCount in range(self.Black_Pos[x]):
-                    BlackList.append(checkerPos)
+                    if checkerPos == "bar":
+                        BlackList.insert(0, checkerPos)
+                    elif checkerPos == "home":
+                        blackHomeCount = blackHomeCount + 1
+                    else:
+                        BlackList.append(checkerPos)
+        ### Adding in the "home" for black checkers at the end
+        for x in range(blackHomeCount):
+            BlackList.append('home')
         ### Reformatting the list of white checkers into the JSON list format...
         for x in range(len(self.White_Pos)):
             if self.White_Pos[x] == 0:
@@ -125,43 +132,52 @@ class Real_Backgammon_Board:
     ## So far, this function checks whether
     ## 1. Checkers are moved off the bar first
     ## 2. Whether a checker is moved from a valid position.
-    def valid_move(self, board, turnInfo):
-        color = turnInfo[0]
-        dice = turnInfo[1]
-        turns = turnInfo[2]
+    def valid_move(self, board):
 
         # 1.Checkers are moved off the bar first
-        barCount = sum(turn.count("bar") for turn in turns)
-        if board.get(color).count("bar") != barCount:
+        barCount = sum(turn.count("bar") for turn in self.turns)
+        if board.get(self.color).count("bar") != barCount:
             return False
 
         # 2. Whether a checker is moved from a valid position.
-        moveFromLocations = [turn[1] for turn in self.listofActions]
-        numCheckersAfterMoving = {location:board.get(color).count(location) -
-                                   moveFromLocations.count(location) for location in moveFromLocations}
-        #print(numCheckersAfterMoving)
-        for numCheckers in numCheckersAfterMoving.values():
-            if numCheckers <= 0:
+        moves = {pos: board.get(self.color).count(pos) for pos in range(26)}
+        for action in self.listofActions:
+            moves[action[1]] -= 1
+            moves[action[2]] += 1
+            if moves[action[1]] < 0:
                 return False
-
         return True
 
     # Reformats 4.1 input into how it was for 3.1
 
     ## TODO-- Need to convert "home" & "bar" to numbers. Beware of issues this causes with future "bar" & "home" conversions.
 
-    def parse_moves(self, turnInfo):
-        color = turnInfo[0]
-        turns = turnInfo[2]
+    def parse_moves(self):
         ## Puts the smaller move before the bigger move it's white's turn
         ## and vice versa for black.
-        if color == "black":
-            moves = [[color, *sorted(turn, reverse=True)] for turn in turns]
-        elif color == "white":
-            moves = [[color, *sorted(turn)] for turn in turns]
+        if self.color == "black":
+            moves = [[self.color, *sorted(turn, reverse=True)] for turn in self.turns]
+        elif self.color == "white":
+            moves = [[self.color, *sorted(turn)] for turn in self.turns]
 
         return moves
 
+    ### Turning position strings ('home' | 'bar') into ints within the listofTurns
+
+    def turnsCleanUp(self, listofTurns):
+        for turn in listofTurns:
+            for turnNo in list(range(len(turn))):
+                if self.color == 'white':
+                    if turn[turnNo] == "bar":
+                        turn[turnNo] = 0
+                    elif turn[turnNo] == "home":
+                        turn[turnNo] = 25
+                elif self.color == 'black':
+                    if turn[turnNo] == "bar":
+                        turn[turnNo] = 25
+                    elif turn[turnNo] == "home":
+                        turn[turnNo] = 0
+        return(listofTurns)
 
 class Proxy_Backgammon_Board:
 
@@ -256,7 +272,6 @@ class Proxy_Backgammon_Board:
                     raise("one of the dice is an invalid data type")
         # checking if the turn arguments are correct
         turns = checkingTurnInfo[2]
-
         for turn in turns:
             if len(turn) != 2:
                 raise("invalid number of cpos in one of the turns")
@@ -266,8 +281,3 @@ class Proxy_Backgammon_Board:
                         raise("invalid cpos within one of the turns")
 
         return(True)
-
-
-
-
-### Testing Cases
