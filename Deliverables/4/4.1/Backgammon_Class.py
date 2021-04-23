@@ -56,6 +56,7 @@ class Real_Backgammon_Board:
                 entry = 25
             totalWhiteCheckers = self.White_Pos[entry] + 1
             self.White_Pos[entry] = totalWhiteCheckers
+        self.post_move_check()
 
     ### Through the listofTurns, we move around pieces until we finally reach the end of the action set
     ### returns nothing
@@ -76,6 +77,7 @@ class Real_Backgammon_Board:
                 self.White_Pos[newPos] = newPosValue
                 oldPosValue = self.White_Pos[oldPos] - 1
                 self.White_Pos[oldPos] = oldPosValue
+
 
     ### Returns the solution as either False or a Board (returns Board if the solution is True)
     def getSolution(self):
@@ -132,21 +134,39 @@ class Real_Backgammon_Board:
     ## So far, this function checks whether
     ## 1. Checkers are moved off the bar first
     ## 2. Whether a checker is moved from a valid position.
+    ## 3. Whether the space moved to is a valid spot.
     def valid_move(self, board):
+        pieces = {pos: board.get(self.color).count(pos) for pos in range(26)}
+        if self.color == "black":
+            home = 0
+            bar = 25
+            pieces[home] = board.get(self.color).count("home")
+            pieces[bar] = board.get(self.color).count("bar")
+            otherColor = "white"
+        elif self.color == "white":
+            home = 25
+            bar = 0
+            pieces[bar] = board.get(self.color).count("bar")
+            pieces[home] = board.get(self.color).count("home")
+            otherColor = "black"
 
         # 1.Checkers are moved off the bar first
-        barCount = sum(turn.count("bar") for turn in self.turns)
-        if board.get(self.color).count("bar") != barCount:
+        barCount = sum(turn.count(bar) for turn in self.turns)
+        if pieces[bar] != barCount:
             return False
 
         # 2. Whether a checker is moved from a valid position.
-        moves = {pos: board.get(self.color).count(pos) for pos in range(26)}
         for action in self.listofActions:
-            moves[action[1]] -= 1
-            moves[action[2]] += 1
-            if moves[action[1]] < 0:
+            pieces[action[1]] -= 1
+            pieces[action[2]] += 1
+            if pieces[action[1]] < 0:
+                return False
+        # 3. Whether the space moved to is a valid spot.
+            elif (pieces[action[2]] > 0) and (board.get(otherColor).count(action[2]) >= 2):
                 return False
         return True
+
+
 
     # Reformats 4.1 input into how it was for 3.1
 
@@ -178,6 +198,20 @@ class Real_Backgammon_Board:
                     elif turn[turnNo] == "home":
                         turn[turnNo] = 0
         return(listofTurns)
+
+    def post_move_check(self):
+        endPositions = set([turn[1] for turn in self.turns])
+        for pos in endPositions:
+            if self.color == "black":
+                bar = 0
+                if (self.Black_Pos[pos] >= 1) and (self.White_Pos[pos]) == 1:
+                        self.White_Pos[pos] -= 1
+                        self.White_Pos[bar] += 1
+            elif self.color == "white":
+                bar = 25
+                if (self.White_Pos[pos]) >= 1 and (self.Black_Pos[pos]) == 1:
+                        self.Black_Pos[pos] -= 1
+                        self.Black_Pos[bar] += 1
 
 class Proxy_Backgammon_Board:
 
