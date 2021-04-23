@@ -25,7 +25,14 @@ class Real_Backgammon_Board:
         ## Filling up the different player lists with the appropriate piece positions
         self.Black_Pos = [0 for i in range(26)]
         self.White_Pos = [0 for i in range(26)]
-        self.solution = True
+        self.listofActions = self.parse_moves(turnInfo)
+
+        if self.valid_move(board, turnInfo):
+            self.moving()
+            self.solution = True
+        else:
+            self.solution = False
+
         for entry in (board["black"]):
             if entry == "bar":
                 entry = 0
@@ -115,6 +122,47 @@ class Real_Backgammon_Board:
         currBoard["white"] = WhiteList
         return(currBoard)
 
+    ## So far, this function checks whether
+    ## 1. Checkers are moved off the bar first
+    ## 2. Whether a checker is moved from a valid position.
+    def valid_move(self, board, turnInfo):
+        color = turnInfo[0]
+        dice = turnInfo[1]
+        turns = turnInfo[2]
+
+        # 1.Checkers are moved off the bar first
+        barCount = sum(turn.count("bar") for turn in turns)
+        if board.get(color).count("bar") != barCount:
+            return False
+
+        # 2. Whether a checker is moved from a valid position.
+        moveFromLocations = [turn[1] for turn in self.listofActions]
+        numCheckersAfterMoving = {location:board.get(color).count(location) -
+                                   moveFromLocations.count(location) for location in moveFromLocations}
+        #print(numCheckersAfterMoving)
+        for numCheckers in numCheckersAfterMoving.values():
+            if numCheckers <= 0:
+                return False
+
+        return True
+
+    # Reformats 4.1 input into how it was for 3.1
+
+    ## TODO-- Need to convert "home" & "bar" to numbers. Beware of issues this causes with future "bar" & "home" conversions.
+
+    def parse_moves(self, turnInfo):
+        color = turnInfo[0]
+        turns = turnInfo[2]
+        ## Puts the smaller move before the bigger move it's white's turn
+        ## and vice versa for black.
+        if color == "black":
+            moves = [[color, *sorted(turn, reverse=True)] for turn in turns]
+        elif color == "white":
+            moves = [[color, *sorted(turn)] for turn in turns]
+
+        return moves
+
+
 class Proxy_Backgammon_Board:
 
     """
@@ -133,6 +181,7 @@ class Proxy_Backgammon_Board:
         self.validSpaces = list(range(26))
         self.validSpaces[0] = "bar"
         self.validSpaces[25] = "home"
+        self.counterColors = ["white", "black"]
         if self.Board_Check(board):
             pass
         else:
@@ -160,9 +209,9 @@ class Proxy_Backgammon_Board:
         if isinstance(checkingBoard, dict):
             whiteList = checkingBoard.get('white')
             blackList = checkingBoard.get('black')
-            if (whiteList == None) or (blackList == None):
+            if (whiteList is None) or (blackList is None):
                 raise("either white or black was missing as a key in the board dictionary")
-            elif (len(whiteList) != 15) or (len(blackList != 15)):
+            elif (len(whiteList) != 15) or (len(blackList) != 15):
                 raise("the length of the list of cpos within the board was not 15")
             else:
                 for entry in whiteList:
@@ -182,6 +231,7 @@ class Proxy_Backgammon_Board:
         #turn: [[cpos, cpos], ...]
     ### then returns True | False depending on if it matches the format
     def Turn_Check(self, checkingTurnInfo):
+
         if len(checkingTurnInfo) != 3:
             raise("the turnInfo has an incorrect number of elements in the list!")
         # checking if the color arguments are correct
@@ -189,11 +239,11 @@ class Proxy_Backgammon_Board:
         if (not isinstance(color, str)):
             raise("the color argument of the turnInfo is an incorrect data type")
         else:
-            if color not in counterColors:
+            if color not in self.counterColors:
                 raise("the color argument of the turnInfo is an invalid color")
         # checking if the dice arguments are correct
         dice = checkingTurnInfo[1]
-        if (len(dice) != 2) or (len(dice) != 4):
+        if (len(dice) != 2) and (len(dice) != 4):
             raise("invalid number of die in game!")
         else:
             for die in dice:
@@ -206,6 +256,7 @@ class Proxy_Backgammon_Board:
                     raise("one of the dice is an invalid data type")
         # checking if the turn arguments are correct
         turns = checkingTurnInfo[2]
+
         for turn in turns:
             if len(turn) != 2:
                 raise("invalid number of cpos in one of the turns")
@@ -213,7 +264,10 @@ class Proxy_Backgammon_Board:
                 for cpos in turn:
                     if cpos not in self.validSpaces:
                         raise("invalid cpos within one of the turns")
+
         return(True)
+
+
 
 
 ### Testing Cases
