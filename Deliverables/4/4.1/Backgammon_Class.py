@@ -177,21 +177,23 @@ class Real_Backgammon_Board:
 
         ## 5. If valid moves are being made with dice
             spacesMoved = [abs(move[0] - move[1]) for move in self.turns]
+            spacesMoved.sort()
+            # if self.color == "black":
+            #     PIP = sum([item[0] * item[1] for item in pieces.items()])
+            # elif self.color == "white":
+            #     PIP = 25*15 - sum([item[0] * item[1] for item in pieces.items()])
+
             if homeBoard + pieces[bar] == 15:
-                if sum(spacesMoved) > sum(self.dice):
+                ## Doesn't catch all cases
+                if sum(spacesMoved) != sum(self.dice):
                     return False
-            elif sorted(self.dice) != sorted(spacesMoved):
+            elif sorted(self.dice) != spacesMoved:
                 return False
-
-
         return True
 
 
 
     # Reformats 4.1 input into how it was for 3.1
-
-    ## TODO-- Need to convert "home" & "bar" to numbers. Beware of issues this causes with future "bar" & "home" conversions.
-
     def parse_moves(self):
         ## Puts the smaller move before the bigger move it's white's turn
         ## and vice versa for black.
