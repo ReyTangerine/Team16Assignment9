@@ -133,8 +133,11 @@ class Real_Backgammon_Board:
 
     ## So far, this function checks whether
     ## 1. Checkers are moved off the bar first
-    ## 2. Whether a checker is moved from a valid position.
-    ## 3. Whether the space moved to is a valid spot.
+    ## 2. All checkers are in pos 1-6 before going home
+    ## 3. Whether a checker is moved from a valid position.
+    ## 4. Whether the space moved to is a valid spot.
+    ## 5. If valid moves are being made with dice
+
     def valid_move(self, board):
         pieces = {pos: board.get(self.color).count(pos) for pos in range(26)}
         if self.color == "black":
@@ -142,12 +145,14 @@ class Real_Backgammon_Board:
             bar = 25
             pieces[home] = board.get(self.color).count("home")
             pieces[bar] = board.get(self.color).count("bar")
+            homeBoard = sum(pieces[pos] for pos in range(7))
             otherColor = "white"
         elif self.color == "white":
             home = 25
             bar = 0
             pieces[bar] = board.get(self.color).count("bar")
             pieces[home] = board.get(self.color).count("home")
+            homeBoard = sum(pieces[pos] for pos in range(19,26))
             otherColor = "black"
 
         # 1.Checkers are moved off the bar first
@@ -155,15 +160,30 @@ class Real_Backgammon_Board:
         if pieces[bar] != barCount:
             return False
 
-        # 2. Whether a checker is moved from a valid position.
+        # 2. All checkers are in homeboard before going home
+        homeCount = sum(turn.count(home) for turn in self.turns)
+        if homeCount > 0 and homeBoard + pieces[bar] != 15:
+            return False
+
+        # 3. Whether a checker is moved from a valid position.
         for action in self.listofActions:
             pieces[action[1]] -= 1
             pieces[action[2]] += 1
             if pieces[action[1]] < 0:
                 return False
-        # 3. Whether the space moved to is a valid spot.
+        # 4. Whether the space moved to is a valid spot.
             elif (pieces[action[2]] > 0) and (board.get(otherColor).count(action[2]) >= 2):
                 return False
+
+        ## 5. If valid moves are being made with dice
+            spacesMoved = [abs(move[0] - move[1]) for move in self.turns]
+            if homeBoard + pieces[bar] == 15:
+                if sum(spacesMoved) > sum(self.dice):
+                    return False
+            elif sorted(self.dice) != sorted(spacesMoved):
+                return False
+
+
         return True
 
 
