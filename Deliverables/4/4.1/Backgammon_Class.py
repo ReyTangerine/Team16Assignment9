@@ -27,6 +27,8 @@ class Real_Backgammon_Board:
         self.color = turnInfo[0]
         self.dice = turnInfo[1]
         self.turns = turnInfo[2]
+        self.blackPieces = {pos: board.get("black").count(pos) for pos in range(26)}
+        self.whitePieces = {pos: board.get("white").count(pos) for pos in range(26)}
 
         ### These next steps are essentially cleaning up the board
         ### We reorder the Black moves since they're in descending order
@@ -56,7 +58,7 @@ class Real_Backgammon_Board:
                 entry = 25
             totalWhiteCheckers = self.White_Pos[entry] + 1
             self.White_Pos[entry] = totalWhiteCheckers
-        self.post_move_check()
+        # self.post_move_check()
 
     ### Through the listofTurns, we move around pieces until we finally reach the end of the action set
     ### returns nothing
@@ -71,12 +73,30 @@ class Real_Backgammon_Board:
                 self.Black_Pos[newPos] = newPosValue
                 oldPosValue = self.Black_Pos[oldPos] - 1
                 self.Black_Pos[oldPos] = oldPosValue
+
+                self.blackPieces[newPos] += 1
+                self.blackPieces[oldPos] -= 1
+
+                bar = 0
+                # print((self.blackPieces[newPos] >= 1), (self.whitePieces[newPos]))
+                if self.whitePieces[newPos] == 1:
+                    self.White_Pos[newPos] -= 1
+                    self.White_Pos[bar] += 1
+
             ### Moving white's pieces
             elif newAction[0] == "white":
                 newPosValue = self.White_Pos[newPos] + 1
                 self.White_Pos[newPos] = newPosValue
                 oldPosValue = self.White_Pos[oldPos] - 1
                 self.White_Pos[oldPos] = oldPosValue
+
+                self.whitePieces[newPos] += 1
+                self.whitePieces[oldPos] -= 1
+
+                bar = 25
+                if (self.blackPieces[newPos]) == 1:
+                    self.Black_Pos[newPos] -= 1
+                    self.Black_Pos[bar] += 1
 
 
     ### Returns the solution as either False or a Board (returns Board if the solution is True)
@@ -156,12 +176,14 @@ class Real_Backgammon_Board:
             otherColor = "black"
 
         # 1.Checkers are moved off the bar first
-        barCount = sum(turn.count(bar) for turn in self.turns)
-        if pieces[bar] != barCount:
+        barCount = sum(turn.count(bar) for turn in self.turns[:pieces[bar]])
+        if len(self.turns) != len(self.dice):
+            pass
+        elif pieces[bar] != barCount:
             return False
 
         # 2. All checkers are in homeboard before going home
-        homeCount = sum(turn.count(home) for turn in self.turns)
+        homeCount = sum(turn.count(home) for turn in self.turns[:pieces[home]])
         if homeCount > 0 and homeBoard + pieces[bar] != 15:
             return False
 
@@ -177,17 +199,30 @@ class Real_Backgammon_Board:
 
         ## 5. If valid moves are being made with dice
             spacesMoved = [abs(move[0] - move[1]) for move in self.turns]
-            spacesMoved.sort()
-            # if self.color == "black":
-            #     PIP = sum([item[0] * item[1] for item in pieces.items()])
-            # elif self.color == "white":
-            #     PIP = 25*15 - sum([item[0] * item[1] for item in pieces.items()])
+            numTurns = len(self.turns)
+            spacesMoved.sort(reverse=True)
 
-            if homeBoard + pieces[bar] == 15:
+            if numTurns != len(self.dice):
+                for loc in pieces:
+                    if pieces[loc] >= 1 and board.get(otherColor).count(loc) >= 2:
+                        return False
+
+                for index, die in enumerate(sorted(self.dice[:numTurns], reverse=True)):
+                    if die >= spacesMoved[index]:
+                        pass
+                    else:
+                        return False
+
+            elif homeBoard + pieces[home] == 15:
                 ## Doesn't catch all cases
-                if sum(spacesMoved) != sum(self.dice):
-                    return False
-            elif sorted(self.dice) != spacesMoved:
+
+                for index, die in enumerate(sorted(self.dice[:numTurns], reverse=True)):
+                    if die >= spacesMoved[index]:
+                        pass
+                    else:
+                        return False
+
+            elif sorted(self.dice, reverse=True) != spacesMoved:
                 return False
         return True
 
@@ -221,19 +256,16 @@ class Real_Backgammon_Board:
                         turn[turnNo] = 0
         return(listofTurns)
 
-    def post_move_check(self):
-        endPositions = set([turn[1] for turn in self.turns])
-        for pos in endPositions:
-            if self.color == "black":
-                bar = 0
-                if (self.Black_Pos[pos] >= 1) and (self.White_Pos[pos]) == 1:
-                        self.White_Pos[pos] -= 1
-                        self.White_Pos[bar] += 1
-            elif self.color == "white":
-                bar = 25
-                if (self.White_Pos[pos]) >= 1 and (self.Black_Pos[pos]) == 1:
-                        self.Black_Pos[pos] -= 1
-                        self.Black_Pos[bar] += 1
+    # def post_move_check(self):
+    #     endPositions = set([turn[1] for turn in self.turns])
+    #     for pos in endPositions:
+    #         if self.color == "black":
+    #             pass
+    #         elif self.color == "white":
+    #             bar = 25
+    #             if (self.White_Pos[pos]) >= 1 and (self.Black_Pos[pos]) == 1:
+    #                     self.Black_Pos[pos] -= 1
+    #                     self.Black_Pos[bar] += 1
 
 class Proxy_Backgammon_Board:
 
