@@ -213,13 +213,6 @@ class Real_Backgammon_Board:
                         return False
 
             elif homeBoard == 15:
-                if self.color == "white":
-                    if 25 - board.get(self.color)[0] > spacesMoved[0]:
-                        return False
-                if self.color == "black":
-                    if board.get(self.color)[-1] > spacesMoved[0]:
-                        return False
-
                 for index, die in enumerate(sorted(self.dice[:numTurns], reverse=True)):
                     if die >= spacesMoved[index]:
                         pass
