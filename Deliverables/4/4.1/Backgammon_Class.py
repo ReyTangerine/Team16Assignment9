@@ -201,7 +201,6 @@ class Real_Backgammon_Board:
             spacesMoved = [abs(move[0] - move[1]) for move in self.turns]
             numTurns = len(self.turns)
             spacesMoved.sort(reverse=True)
-
             if numTurns != len(self.dice):
                 for loc in pieces:
                     if pieces[loc] >= 1 and board.get(otherColor).count(loc) >= 2:
@@ -213,9 +212,7 @@ class Real_Backgammon_Board:
                     else:
                         return False
 
-            elif homeBoard + pieces[home] == 15:
-                ## Doesn't catch all cases
-
+            elif homeBoard == 15:
                 for index, die in enumerate(sorted(self.dice[:numTurns], reverse=True)):
                     if die >= spacesMoved[index]:
                         pass
@@ -223,6 +220,8 @@ class Real_Backgammon_Board:
                         return False
 
             elif sorted(self.dice, reverse=True) != spacesMoved:
+                print(self.turns, self.dice)
+
                 return False
         return True
 
