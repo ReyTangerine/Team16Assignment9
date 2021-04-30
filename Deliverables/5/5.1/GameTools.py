@@ -89,8 +89,6 @@ class Player:
                 checkerToMove = "bar"
             else:
                 checkerToMove = board.get(self.color)[randint(0, notInHome-1)]
-                print(board.get(self.color))
-                print(board.get(self.color)[randint(0, notInHome-1)])
             if self.color == "black":
                 if checkerToMove == "bar":
                     checkerToMove = 25
