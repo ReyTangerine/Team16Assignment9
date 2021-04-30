@@ -1,15 +1,6 @@
+from GameTools import Player, Game
 import sys
 import json
-
-print("Hello World!")
-
-"""
-from Backgammon_Class import Proxy_Backgammon_Board
-
-
-def inputdecoder(board, color, dice, move):
-    return [board, [color, dice, move]]
-
 
 d = json.JSONDecoder()
 e = json.JSONEncoder()
@@ -17,8 +8,15 @@ e = json.JSONEncoder()
 str = sys.stdin.read()
 input = d.decode(str)
 
-board = Proxy_Backgammon_Board(*inputdecoder(*input))
+game = Game("player1", "player2")
 
-print(e.encode(board.getSolution()))
+board = input[0]
+color = input[1]
+dice = input[2]
 
-"""
+game.set_board(board)
+if color == "black":
+    game.turnNum = 1
+print(game.turn(dice))
+
+

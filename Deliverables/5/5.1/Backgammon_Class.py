@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 class Real_Backgammon_Board:
 
     """
@@ -336,6 +338,7 @@ class Proxy_Backgammon_Board:
     ### a list of valid checker-spaces to test the boards against for self.validSpaces
 
     def __init__(self, board, turnInfo):
+        turnInfo = deepcopy(turnInfo)
         self.validSpaces = list(range(26))
         self.validSpaces[0] = "bar"
         self.validSpaces[25] = "home"
