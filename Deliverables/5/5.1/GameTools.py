@@ -81,6 +81,7 @@ class Player:
 
     def random_move(self, board, dice):
         board = deepcopy(board)
+        board = self.sort_board(board)
         moves = []
         for die in dice:
             notInHome = 15 - board.get(self.color).count("home")
@@ -88,6 +89,8 @@ class Player:
                 checkerToMove = "bar"
             else:
                 checkerToMove = board.get(self.color)[randint(0, notInHome-1)]
+                print(board.get(self.color))
+                print(board.get(self.color)[randint(0, notInHome-1)])
             if self.color == "black":
                 if checkerToMove == "bar":
                     checkerToMove = 25
@@ -153,14 +156,14 @@ class Player:
         blackpieces = board.get("black")
         whitepieces = [25 if item == "home" else item for item in whitepieces]
         whitepieces = [0 if item == "bar" else item for item in whitepieces]
-        blackpieces = [25 if item == "bar" else item for item in blackpieces]
-        blackpieces = [0 if item == "home" else item for item in blackpieces]
+        blackpieces = [0 if item == "bar" else item for item in blackpieces]
+        blackpieces = [25 if item == "home" else item for item in blackpieces]
         blackpieces.sort()
         whitepieces.sort()
         whitepieces = ["home" if item == 25 else item for item in whitepieces]
         whitepieces = ["bar" if item == 0 else item for item in whitepieces]
-        blackpieces = ["bar" if item == 25 else item for item in blackpieces]
-        blackpieces = ["home" if item == 0 else item for item in blackpieces]
+        blackpieces = ["bar" if item == 0 else item for item in blackpieces]
+        blackpieces = ["home" if item == 25 else item for item in blackpieces]
         board["white"] = whitepieces
         board["black"] = blackpieces
         return board
