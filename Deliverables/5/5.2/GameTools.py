@@ -24,9 +24,13 @@ class Game:
             dice = self.roll_dice()
         if self.turnNum == 0:
             move = self.p1.turn(self.board, dice, random=True)
+            if move is False:
+                return False
             self.board = Proxy_Backgammon_Board(self.board, [self.p1.color, dice, move]).getSolution()
         else:
             move = self.p2.turn(self.board, dice, random=True)
+            if move is False:
+                return False
             self.board = Proxy_Backgammon_Board(self.board, [self.p2.color, dice, move]).getSolution()
         self.game_end_check()
         return move
@@ -64,6 +68,7 @@ class Player:
         self.colors = ["white", "black"]
         self.gameInProgress = True
         self.exampleTurn = ["white", [1,2], [[1,3],[1,2]]]
+        self.moveCache = []
 
     def name(self):
         assert isinstance(self.name, str)
@@ -123,11 +128,15 @@ class Player:
 
     def turn(self, board, dice, random):
         movesValid = False
+        movesCache = 0
         if random:
             while movesValid is False:
                 try:
                     moves = self.random_move(board, dice)
                     movesValid = Proxy_Backgammon_Board(board, [self.color, dice, moves]).getSolution()
+                    movesCache += 1
+                    if movesCache > 100:
+                        return False
                 except AssertionError:
                     pass
             return moves
