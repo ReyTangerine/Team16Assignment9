@@ -17,6 +17,11 @@ dice = input[2]
 game.set_board(board)
 if color == "black":
     game.turnNum = 1
-print(e.encode(game.turn(dice)))
+
+retVal = game.turn(dice)
+if retVal is False:
+    print(False)
+else:
+    print(e.encode(retVal))
 
 
