@@ -100,7 +100,6 @@ class Player:
                     moves.append([checkerToMove, "home"])
                 else:
                     moves.append([checkerToMove, movement])
-                print(checkerToMove, movement)
                 board.get(self.color).remove(checkerToMove)
                 board.get(self.color).append(movement)
 
