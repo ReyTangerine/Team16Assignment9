@@ -107,7 +107,6 @@ class Player:
                     moves.append([checkerToMove, movement])
                 board.get(self.color).remove(checkerToMove)
                 board.get(self.color).append(movement)
-                print(checkerToMove, movement)
 
             elif self.color == "white":
                 if checkerToMove == "bar":
