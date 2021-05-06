@@ -8,6 +8,8 @@ s = socket.socket()         # Create a socket object
 
 # input = d.decode(str)
 hostandport = sys.stdin.read()
+
+hostandport = d.decode(hostandport)
 ### network-config::= { "host" : string, "port" : number }
 host = hostandport["host"]
 port = hostandport["port"]
