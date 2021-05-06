@@ -7,13 +7,15 @@ d = json.JSONDecoder()
 s = socket.socket()         # Create a socket object
 
 # input = d.decode(str)
-
+hostandport = sys.stdin.read()
 ### network-config::= { "host" : string, "port" : number }
-host = str["host"]
-port = str["port"]
+host = hostandport["host"]
+port = hostandport["port"]
 
 s.connect((host, port))
+
 input = sys.stdin.read()
+
 print(input)
 str = d.decode(input)
 
