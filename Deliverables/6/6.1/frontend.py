@@ -4,19 +4,20 @@ import json
 import socket
 
 d = json.JSONDecoder()
-e = json.JSONEncoder()
 s = socket.socket()         # Create a socket object
 
-str = sys.stdin.read()
-input = d.decode(str)
+# input = d.decode(str)
 
 ### network-config::= { "host" : string, "port" : number }
 host = str["host"]
 port = str["port"]
 
 s.connect((host, port))
-print s.recv(1024)
-s.close
+input = sys.stdin.read()
+print(input)
+str = d.decode(input)
+
+s.close()
 
 """
 game = Game("player1", "player2")

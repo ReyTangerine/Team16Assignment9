@@ -1,4 +1,5 @@
 import socket
+import json
 
 d = json.JSONDecoder()
 e = json.JSONEncoder()
@@ -11,10 +12,10 @@ print(host)
 
 s.listen(5)                 # Now wait for client connection.
 
-dict = {"host":host,"port":port}
+string = b"This is a byte object i hope"
 
 while True:
    c, addr = s.accept()     # Establish connection with client.
    print('Got connection from', addr)
-   c.send(dict)
+   c.send(string)
    c.close()                # Close the connection
