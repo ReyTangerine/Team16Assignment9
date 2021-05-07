@@ -8,16 +8,27 @@ from copy import deepcopy
 
 class Game:
 
-    def __init__(self, player1Name, player2Name):
+    def __init__(self, player1Name):
         assert isinstance(player1Name, str)
-        assert isinstance(player2Name, str)
+        self.playerName = player1Name
+        self.turnNum = 0
+        self.board = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
+                 "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19, 19, 19, 19]}
+
+    def set_player_fields(self, color, otherPlayerName):
+        assert isinstance(color, str)
+        assert isinstance(otherPlayerName, str)
+        if color == "black":
+            player1Name = otherPlayerName
+            player2Name = self.playerName
+            self.turnNum += 1
+        elif color == "white":
+            player1Name = self.playerName
+            player2Name = otherPlayerName
         self.p1 = Player(player1Name, "white")
         self.p2 = Player(player2Name, "black")
         self.p1.start_game("white", player2Name)
         self.p2.start_game("black", player1Name)
-        self.turnNum = 0
-        self.board = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
-                 "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19, 19, 19, 19]}
 
     def turn(self, dice = False):
         if dice is False:
@@ -25,12 +36,12 @@ class Game:
         if self.turnNum == 0:
             move = self.p1.turn(self.board, dice, random=True)
             if move is False:
-                return False
+                return []
             self.board = Proxy_Backgammon_Board(self.board, [self.p1.color, dice, move]).getSolution()
         else:
             move = self.p2.turn(self.board, dice, random=True)
             if move is False:
-                return False
+                return []
             self.board = Proxy_Backgammon_Board(self.board, [self.p2.color, dice, move]).getSolution()
         self.game_end_check()
         return move
@@ -70,7 +81,7 @@ class Player:
         self.exampleTurn = ["white", [1,2], [[1,3],[1,2]]]
         self.moveCache = []
 
-    def name(self):
+    def get_name(self):
         assert isinstance(self.name, str)
         return self.name
 
@@ -150,11 +161,13 @@ class Player:
         Proxy_Backgammon_Board(board, self.exampleTurn)
 
         if didYouWin:
-            print("Game Over.\nYou Won!")
+            pass
+            # print("Game Over.\nYou Won!")
         else:
-            print("Game Over.\nYou Lost.")
-        print("The final board was:\n")
-        print(board)
+            pass
+        #     print("Game Over.\nYou Lost.")
+        # print("The final board was:\n")
+        # print(board)
 
         return
 
