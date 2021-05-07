@@ -1,15 +1,15 @@
 import unittest
 from Backgammon_Class import Proxy_Backgammon_Board
-import frontend
+from frontend import runfile
 import json
-import socket
-
-d = json.JSONDecoder()
-e = json.JSONEncoder()
 
 class GameTest(unittest.TestCase):
+
     def test1(self):
-        x =
+        e = json.JSONEncoder()
+        input = e.encode({"host": "Nan-Desu-Ka.local", "port": 12345})
+        runfile(input)
+        # self.assertEqual(board, board1)
 
 if __name__== "__main__":
     unittest.main()
