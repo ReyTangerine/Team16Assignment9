@@ -19,6 +19,7 @@ if color == "black":
     game.turnNum = 1
 
 retVal = game.turn(dice)
+
 if retVal is False:
     print(e.encode([]))
 else:

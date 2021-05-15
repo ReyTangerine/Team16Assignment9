@@ -22,7 +22,7 @@ class Game:
     def turn(self, dice = False):
         if dice is False:
             dice = self.roll_dice()
-        if self.turnNum == 0:
+        if self.turnNum % 2 == 0:
             move = self.p1.turn(self.board, dice, random=True)
             if move is False:
                 return False
@@ -33,6 +33,7 @@ class Game:
                 return False
             self.board = Proxy_Backgammon_Board(self.board, [self.p2.color, dice, move]).getSolution()
         self.game_end_check()
+        self.turnNum += 1
         return move
 
     def roll_dice(self):
