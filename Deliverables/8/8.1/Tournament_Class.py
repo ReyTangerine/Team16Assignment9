@@ -203,9 +203,13 @@ class Tournament():
             except CheatingError:
                 if newAdmin.playerACheatingBool is True:
                     winner, loser = self.cheating(PlayerA, PlayerA, PlayerB)
+                    newAdmin.playerA.end_game(newAdmin.get_board(), False)
+                    newAdmin.playerB.end_game(newAdmin.get_board(), True)
                     return winner, loser
                 elif newAdmin.playerBCheatingBool is True:
                     winner, loser = self.cheating(PlayerB, PlayerA, PlayerB)
+                    newAdmin.playerA.end_game(newAdmin.get_board(), True)
+                    newAdmin.playerB.end_game(newAdmin.get_board(), False)
                     return winner, loser
 
 
