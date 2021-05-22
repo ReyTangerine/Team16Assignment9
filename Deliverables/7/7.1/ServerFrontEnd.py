@@ -132,8 +132,6 @@ if Name_Check(NameInput):
 else:
     newAdmin.start_game("white", "Malnati")
     c.close()
-    theirColor = "black"
-    start_game_output = {"start-game": [theirColor, localPlayer]}
     playGameOut()
 
 try:
@@ -141,8 +139,6 @@ try:
 except AssertionError:
     newAdmin.start_game("white", "Malnati")
     c.close()
-    theirColor = "black"
-    start_game_output = {"start-game": [theirColor, localPlayer]}
     playGameOut()
 
 
