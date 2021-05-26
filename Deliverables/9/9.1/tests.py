@@ -22,6 +22,14 @@ class GameTest(unittest.TestCase):
         retVal = goodGame.turn([3, 6])
         self.assertEqual(retVal, [[12, 15], [12, 18]])
 
+    def test_start(self):
+        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
+                 "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19, 19, 19, 19]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("black", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([2, 2, 2, 2])
+        self.assertEqual(len(retVal), 2)
 
 
 if __name__== "__main__":

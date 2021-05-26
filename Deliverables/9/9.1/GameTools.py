@@ -16,9 +16,9 @@ class Game:
         self.gameInProgress = True
         self.p1 = None
         self.p2 = None
-        board = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
+        self.StartingBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
                  "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19, 19, 19, 19]}
-        self.board = Proxy_Backgammon_Board(board)
+        self.board = Proxy_Backgammon_Board(self.StartingBoard)
 
     def set_player_fields(self, color, otherPlayerName):
         assert isinstance(color, str)
@@ -41,6 +41,12 @@ class Game:
         oldBoard = deepcopy(self.board)
         if dice is False:
             dice = self.roll_dice()
+        # originalBoard = deepcopy(oldBoard.getSolution())
+        # print(originalBoard)
+        # print(self.StartingBoard)
+        # if originalBoard == self.StartingBoard and len(dice) == 4:
+        #     while len(dice) == 4:
+        #         dice = self.roll_dice()
         if turn is False:
             ### Conditionals for strategies will be added here
             if self.turnNum % 2 == 0:
@@ -151,7 +157,7 @@ class Player:
             answer.append([turn, newScore])
 
         answer.sort(key=lambda pair: pair[1], reverse=True)
-        print(answer)
+        # print(answer)
         bestMove = answer[0][0]
         return bestMove
 
