@@ -8,13 +8,15 @@ e = json.JSONEncoder()
 str = sys.stdin.read()
 input = d.decode(str)
 
-game = Game("player1", "player2")
+game = Game("player1", strategy="good")
 
 board = input[0]
 color = input[1]
 dice = input[2]
 
+game.set_player_fields(color, "player2")
 game.set_board(board)
+
 if color == "black":
     game.turnNum = 1
 
