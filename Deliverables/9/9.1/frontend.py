@@ -1,4 +1,4 @@
-from GameTools import Player, Game
+from GameTools import Game
 import sys
 import json
 

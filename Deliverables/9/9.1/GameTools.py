@@ -171,7 +171,7 @@ class Player:
         moveSet = self.generate_moves(newboard, deepcopy(dice))
         if random:
             if self.strategy == "good":
-                moves = self.smart_move(moveSet)
+                moves = self.smart_move(moveSet, newboard)
             else:
                 moves = self.random_move(moveSet)
             eatMove = deepcopy(moves)
