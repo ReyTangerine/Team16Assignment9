@@ -124,6 +124,8 @@ class Player:
         self.gameInProgress = True
         self.exampleTurn = ["white", [1,2], [[1,3],[1,2]]]
         self.moveCache = []
+        self.StartingBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
+                              "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19, 19, 19, 19]}
 
     def get_name(self):
         assert isinstance(self.name, str)
@@ -152,14 +154,96 @@ class Player:
 
     def smart_move(self, board, moveSet, dice):
         answer = []
-        for turn in moveSet:
-            newScore = self.score(deepcopy(turn), deepcopy(board), deepcopy(dice))
-            answer.append([turn, newScore])
+        ourBoard = deepcopy(board)
+        ourBoard = ourBoard.getSolution()
+        print(ourBoard)
+        ### Opening Moves Condition
+        if ourBoard == self.StartingBoard:
 
-        answer.sort(key=lambda pair: pair[1], reverse=True)
-        # print(answer)
-        bestMove = answer[0][0]
+            if len(dice) == 2:
+                bestMove = self.starting_move(dice)
+            elif len(dice) == 4:
+                bestMove = self.random_move(moveSet)
+        ### Else, we're in normal game
+        else:
+            for turn in moveSet:
+                newScore = self.score(deepcopy(turn), deepcopy(board), deepcopy(dice))
+                answer.append([turn, newScore])
+
+            answer.sort(key=lambda pair: pair[1], reverse=True)
+            # print(answer)
+            bestMove = answer[0][0]
         return bestMove
+
+    def starting_move(self, dice):
+        ourDice = deepcopy(dice)
+        ourDice.sort(reverse=True)
+        ### Black's Opening Moves Occur Here
+        if self.color == "black":
+            if ourDice == [2, 1]:
+                return [[13, 11], [6, 5]]
+            elif ourDice == [3, 1]:
+                return [[8, 5], [6, 5]]
+            elif ourDice == [4, 1]:
+                return [[24, 23], [13, 9]]
+            elif ourDice == [5, 1]:
+                return [[24, 23], [13, 8]]
+            elif ourDice == [6, 1]:
+                return [[13, 7], [8, 7]]
+            elif ourDice == [3, 2]:
+                return [[24, 21], [13, 11]]
+            elif ourDice == [4, 2]:
+                return [[8, 4], [6, 4]]
+            elif ourDice == [5, 2]:
+                return [[24, 22], [13, 8]]
+            elif ourDice == [6, 2]:
+                return [[24, 18], [13, 11]]
+            elif ourDice == [4, 3]:
+                return [[13, 10], [13, 9]]
+            elif ourDice == [5, 3]:
+                return [[8, 3], [6, 3]]
+            elif ourDice == [6, 3]:
+                return [[24, 18], [13, 10]]
+            elif ourDice == [5, 4]:
+                return [[24, 20], [13, 8]]
+            elif ourDice == [6, 4]:
+                return [[24, 18], [13, 9]]
+            elif ourDice == [6, 5]:
+                return [[24, 18], [18, 13]]
+
+        ### White's Opening Moves Occur Here
+        elif self.color == "white":
+            if ourDice == [2, 1]:
+                return [[12, 14], [19, 20]]
+            elif ourDice == [3, 1]:
+                return [[17, 20], [19, 20]]
+            elif ourDice == [4, 1]:
+                return [[1, 2], [12, 16]]
+            elif ourDice == [5, 1]:
+                return [[1, 2], [12, 17]]
+            elif ourDice == [6, 1]:
+                return [[12, 18], [17, 18]]
+            elif ourDice == [3, 2]:
+                return [[1, 4], [12, 14]]
+            elif ourDice == [4, 2]:
+                return [[17, 21], [19, 21]]
+            elif ourDice == [5, 2]:
+                return [[1, 3], [12, 17]]
+            elif ourDice == [6, 2]:
+                return [[1, 7], [12, 14]]
+            elif ourDice == [4, 3]:
+                return [[12, 15], [12, 16]]
+            elif ourDice == [5, 3]:
+                return [[17, 22], [19, 22]]
+            elif ourDice == [6, 3]:
+                return [[1, 7], [12, 15]]
+            elif ourDice == [5, 4]:
+                return [[1, 5], [12, 7]]
+            elif ourDice == [6, 4]:
+                return [[1, 7], [12, 16]]
+            elif ourDice == [6, 5]:
+                return [[1, 7],[7, 12]]
+
 
     # Bopping = 1/each piece
     # Can be bopped = -0.5/each piece
