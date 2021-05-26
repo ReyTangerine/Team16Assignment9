@@ -34,6 +34,8 @@ class Game:
         self.p2 = Player(player2Name, "black")
         self.p1.start_game("white", player2Name)
         self.p2.start_game("black", player1Name)
+        self.p1.set_strategy(self.strategy)
+        self.p2.set_strategy(self.strategy)
 
     def turn(self, dice = False, turn = False):
         oldBoard = deepcopy(self.board)
@@ -107,7 +109,12 @@ class Player:
     def __init__(self, name, color):
         self.name = name
         self.color = color
+        self.strategy = None
         self.colors = ["white", "black"]
+        if self.color == self.colors[0]:
+            self.otherColor = self.colors[1]
+        elif self.color == self.colors[1]:
+            self.otherColor = self.colors[0]
         self.gameInProgress = True
         self.exampleTurn = ["white", [1,2], [[1,3],[1,2]]]
         self.moveCache = []
@@ -116,6 +123,9 @@ class Player:
         assert isinstance(self.name, str)
         return self.name
 
+    def set_strategy(self, strategy):
+        self.strategy = strategy
+
     def start_game(self, color, opponentName):
         assert isinstance(opponentName, str)
         assert color in self.colors
@@ -123,79 +133,49 @@ class Player:
         # Informs the player a game has started, its color, and what its opponent’s name is
         return None
 
-    def random_move(self, board, die):
+    def generate_moves(self, board, die):
         JSONBoard = deepcopy(board.getSolution())
         ourTurnTree = turnTree(JSONBoard, self.color, deepcopy(die))
         moveSet = ourTurnTree.get_all_turns()
+        return moveSet
+
+    def random_move(self, moveSet):
         randIndex = randint(0, len(moveSet) - 1)
         randomMove = moveSet[randIndex]
         return randomMove
-        # jsonboard = board.returning_board()
-        # board = deepcopy(board.returning_board())
-        # dice = deepcopy(dice)
-        # board = self.sort_board(board)
-        # moves = []
-        # for die in dice:
-        #     notInHome = 15 - board.get(self.color).count("home")
-        #     if board.get(self.color)[0] == "bar":
-        #         checkerToMove = "bar"
-        #     else:
-        #         checkerToMove = board.get(self.color)[randint(0, notInHome-1)]
-        #     if self.color == "black":
-        #         if checkerToMove == "bar":
-        #             checkerToMove = 25
-        #         elif checkerToMove == "home":
-        #             checkerToMove = 0
-        #
-        #         movement = checkerToMove - die
-        #         if checkerToMove == 25:
-        #             checkerToMove = "bar"
-        #         elif checkerToMove == 0:
-        #             checkerToMove = "home"
-        #         if movement <= 0:
-        #             movement = "home"
-        #             moves.append([checkerToMove, "home"])
-        #         else:
-        #             moves.append([checkerToMove, movement])
-        #         board.get(self.color).remove(checkerToMove)
-        #         board.get(self.color).append(movement)
-        #
-        #     elif self.color == "white":
-        #         if checkerToMove == "bar":
-        #             checkerToMove = 0
-        #         elif checkerToMove == "home":
-        #             checkerToMove = 25
-        #
-        #         movement = die + checkerToMove
-        #         if checkerToMove == 0:
-        #             checkerToMove = "bar"
-        #         elif checkerToMove == 25:
-        #             checkerToMove = "home"
-        #         if movement >= 25:
-        #             movement = "home"
-        #             moves.append([checkerToMove, "home"])
-        #         else:
-        #             moves.append([checkerToMove, movement])
-        #         board.get(self.color).remove(checkerToMove)
-        #         board.get(self.color).append(movement)
-        #     board = self.sort_board(board)
-        # return moves
 
+    def smart_move(self, board, moveSet):
+        answer = []
+        for turn in moveSet:
+            newScore = self.score(deepcopy(turn), deepcopy(board))
+            answer.append([turn, newScore])
+
+        answer.sort(key=lambda pair: pair[1])
+        bestMove = answer[0]
+        return bestMove
+
+    def score(self, turn, board):
+        score = 0
+        oldBoard = board
+        newBoard = deepcopy(board)
+        newBoard.moving(turn)
+        oldJSONBoard = oldBoard.getSolution()
+        newJSONBoard = newBoard.getSolution()
+        if oldJSONBoard[self.otherColor] == newJSONBoard[self.otherColor]:
+            score += 1
+        return score
 
 
     def turn(self, board, dice, random):
-        # movesCache = 0
+        newboard = deepcopy(board)
+        moveSet = self.generate_moves(newboard, deepcopy(dice))
         if random:
-            newboard = deepcopy(board)
-            newdice = deepcopy(dice)
-            moves = self.random_move(newboard, newdice)
+            if self.strategy == "good":
+                moves = self.smart_move(moveSet)
+            else:
+                moves = self.random_move(moveSet)
             eatMove = deepcopy(moves)
-            # newBoard = Proxy_Backgammon_Board(board)
-            newboard.moving(self.color, deepcopy(newdice), eatMove)
-            # movesValid = newboard.getSolution()
-            # movesCache += 1
-            # if movesCache > 1000:
-            #     return False
+            newboard.moving(self.color, deepcopy(dice), eatMove)
         return moves
 
     def end_game(self, board, didYouWin):

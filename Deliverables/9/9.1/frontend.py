@@ -17,9 +17,6 @@ dice = input[2]
 game.set_player_fields(color, "player2")
 game.set_board(board)
 
-if color == "black":
-    game.turnNum = 1
-
 retVal = game.turn(dice)
 
 if retVal is False:
