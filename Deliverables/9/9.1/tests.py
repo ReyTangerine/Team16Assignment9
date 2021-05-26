@@ -24,47 +24,32 @@ class GameTest(unittest.TestCase):
 
     ### Opening Moves Cases
     def test_opening25b(self):
-        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 15, 18, 24, 24],
-                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
         goodGame = Game("player1", strategy="good")
         goodGame.set_player_fields("black", "player2")
-        goodGame.set_board(testBoard)
         retVal = goodGame.turn([2, 5])
         self.assertEqual(retVal, [[24, 22], [13, 8]])
 
     def test_opening25w(self):
-        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 15, 18, 24, 24],
-                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
         goodGame = Game("player1", strategy="good")
         goodGame.set_player_fields("white", "player2")
-        goodGame.set_board(testBoard)
         retVal = goodGame.turn([5, 2])
         self.assertEqual(retVal, [[1, 3], [12, 17]])
 
     def test_opening13b(self):
-        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 15, 18, 24, 24],
-                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
         goodGame = Game("player1", strategy="good")
         goodGame.set_player_fields("black", "player2")
-        goodGame.set_board(testBoard)
         retVal = goodGame.turn([1, 3])
         self.assertEqual(retVal, [[8, 5], [6, 5]])
 
     def test_opening56b(self):
-        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 15, 18, 24, 24],
-                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
         goodGame = Game("player1", strategy="good")
         goodGame.set_player_fields("black", "player2")
-        goodGame.set_board(testBoard)
         retVal = goodGame.turn([5, 6])
         self.assertEqual(retVal, [[24, 18], [18, 13]])
 
     def test_opening34w(self):
-        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 15, 18, 24, 24],
-                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
         goodGame = Game("player1", strategy="good")
         goodGame.set_player_fields("white", "player2")
-        goodGame.set_board(testBoard)
         retVal = goodGame.turn([3, 4])
         self.assertEqual(retVal, [[12, 15], [12, 16]])
 

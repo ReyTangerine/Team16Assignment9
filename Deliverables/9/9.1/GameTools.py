@@ -154,12 +154,8 @@ class Player:
 
     def smart_move(self, board, moveSet, dice):
         answer = []
-        ourBoard = deepcopy(board)
-        ourBoard = ourBoard.getSolution()
-        print(ourBoard)
         ### Opening Moves Condition
-        if ourBoard == self.StartingBoard:
-
+        if board.getSolution() == self.StartingBoard:
             if len(dice) == 2:
                 bestMove = self.starting_move(dice)
             elif len(dice) == 4:
