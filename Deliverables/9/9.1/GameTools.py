@@ -155,22 +155,53 @@ class Player:
         bestMove = answer[0][0]
         return bestMove
 
+    # Bopping = 1/each piece
+    # Can be bopped = -0.5/each piece
+    # Candlestick = -0.3/each piece if >= 5 on a space.
+
     def score(self, turn, board, dice):
-        score = 0
+        BoppingWeight = 1
+        canBeBoppedWeight = -0.5
+        candlestickWeight = -0.3
+
+        score = 0.0
         oldBoard = board
         newBoard = deepcopy(board)
         newBoard.moving(self.color, dice, turn)
         oldJSONBoard = oldBoard.getSolution()
         newJSONBoard = newBoard.getSolution()
-        if oldJSONBoard[self.otherColor] != newJSONBoard[self.otherColor]:
-            score += 1
+
+        # Bopping Condition
+        numBopped = newJSONBoard[self.otherColor].count("bar") - oldJSONBoard[self.otherColor].count("bar")
+        score += BoppingWeight * numBopped
+
+        # Can be Bopped Condition
+        oldpieces = set(oldJSONBoard[self.color])
+        oldBlottables = 0
+        for piece in oldpieces:
+            if oldJSONBoard[self.color].count(piece) == 1:
+                oldBlottables += 1
+
+        newpieces = set(newJSONBoard[self.color])
+        newBlottables = 0
+        for piece in newpieces:
+            if newJSONBoard[self.color].count(piece) == 1:
+                newBlottables += 1
+
+        blottableDiff = newBlottables - oldBlottables - numBopped
+        score += blottableDiff * canBeBoppedWeight
+
+        # Candlestick Condition
+        for pieces in newJSONBoard[self.color]:
+            if newJSONBoard[self.color].count(pieces) >= 5:
+                score += candlestickWeight
+
         return score
 
 
     def turn(self, board, dice, random):
         newboard = deepcopy(board)
         moveSet = self.generate_moves(newboard, deepcopy(dice))
-        print("this is moveSet: ", moveSet)
         if random:
             if self.strategy == "good":
                 moves = self.smart_move(newboard, moveSet, deepcopy(dice))
