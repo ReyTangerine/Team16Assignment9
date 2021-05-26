@@ -41,6 +41,7 @@ class Game:
         oldBoard = deepcopy(self.board)
         if dice is False:
             dice = self.roll_dice()
+            self.debuggingDice = deepcopy(dice)
         # originalBoard = deepcopy(oldBoard.getSolution())
         # print(originalBoard)
         # print(self.StartingBoard)
@@ -94,10 +95,12 @@ class Game:
             self.p1.end_game(endBoard, True)
             self.p2.end_game(endBoard, False)
             self.gameInProgress = False
+            self.winnerNameOfGame = [self.p1.get_name(), "p1"]
         elif endBoard.get("black").count("home") == 15:
             self.p1.end_game(endBoard, False)
             self.p2.end_game(endBoard, True)
             self.gameInProgress = False
+            self.winnerNameOfGame = [self.p2.get_name(), "p2"]
 
 
     def get_board(self):
@@ -244,11 +247,18 @@ class Player:
     # Bopping = 1/each piece
     # Can be bopped = -0.5/each piece
     # Candlestick = -0.3/each piece if >= 5 on a space.
+    # if point = .5/each point
+    # if point in our homeboard, add weight moreso than a normal point, so total = .75/each point
 
     def score(self, turn, board, dice):
+        self.debuggingTurn = deepcopy(turn)
         BoppingWeight = 1
         canBeBoppedWeight = -0.5
         candlestickWeight = -0.3
+        pointWeight = 0.5
+        pointHomeWeight = 0.75
+
+        homeBoard = self.generateHomeBoard(self.color)
 
         score = 0.0
         oldBoard = board
@@ -256,6 +266,10 @@ class Player:
         newBoard.moving(self.color, dice, turn)
         oldJSONBoard = oldBoard.getSolution()
         newJSONBoard = newBoard.getSolution()
+
+        ### TODO: Fix this condition of endgame weirdness with all possible turns
+        if newJSONBoard is False:
+            return -10000000000000.0
 
         # Bopping Condition
         numBopped = newJSONBoard[self.otherColor].count("bar") - oldJSONBoard[self.otherColor].count("bar")
@@ -282,8 +296,38 @@ class Player:
             if newJSONBoard[self.color].count(pieces) >= 5:
                 score += candlestickWeight
 
+        # Points Condition - (oldpieces is list of spaces we have checkers on in the old board,
+        # and new pieces is list of spaces we have checkers on in the new board)
+        oldhomePoint = 0
+        newhomePoint = 0
+        oldotherPoint = 0
+        newotherPoint = 0
+        for piece in oldpieces:
+            if oldJSONBoard[self.color].count(piece) == 2:
+                if piece in homeBoard:
+                    oldhomePoint += 1
+                else:
+                    oldotherPoint += 1
+
+        for piece in newpieces:
+            if newJSONBoard[self.color].count(piece) == 2:
+                if piece in homeBoard:
+                    newhomePoint += 1
+                else:
+                    newotherPoint += 1
+
+        oldPointScore = pointWeight * oldotherPoint + pointHomeWeight * oldhomePoint
+        newPointScore = pointWeight * newotherPoint + pointHomeWeight * newhomePoint
+        weightedPointChange = newPointScore - oldPointScore
+        score += weightedPointChange
         return score
 
+    def generateHomeBoard(self, color):
+        boardSpaces = [i for i in range(26)]
+        if color == "black":
+            return boardSpaces[1:7]
+        elif color == "white":
+            return boardSpaces[19:25]
 
     def turn(self, board, dice, random):
         newboard = deepcopy(board)

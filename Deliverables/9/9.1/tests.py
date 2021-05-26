@@ -53,6 +53,33 @@ class GameTest(unittest.TestCase):
         retVal = goodGame.turn([3, 4])
         self.assertEqual(retVal, [[12, 15], [12, 16]])
 
+    ### Points Test Case
+
+    def test_homepoints(self):
+        testBoard = {"black": [2, 2, 3, 3, 4, 5, 7, 10, 16, 16, 16, 18, 18, 18, 20],
+                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 17, 19, 19, 19, 19]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("black", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([5, 3])
+        self.assertEqual(retVal, [[10, 5], [7, 4]])
+
+    ### Game simulation, good vs rando
+    def test_game_simulation(self):
+        try:
+            goodGame = Game("player1", strategy="good")
+            goodGame.set_player_fields("black", "player2")
+            goodGame.p2.set_strategy("rando")
+            while goodGame.gameInProgress:
+                goodGame.turn(dice = False, turn = False)
+            self.assertEqual(self.winnerNameOfGame[1],"p1")
+        except:
+            print(goodGame.turnNum)
+            print(goodGame.get_board())
+            print("dice, ", goodGame.debuggingDice)
+            print("turn, ", goodGame.p2.debuggingTurn)
+
 
 if __name__== "__main__":
     unittest.main()
+

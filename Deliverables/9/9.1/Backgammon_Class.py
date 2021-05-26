@@ -660,4 +660,6 @@ class turnTree:
         # blackpieces = ["bar" if item == 0 else item for item in pieces]
         # blackpieces = ["home" if item == 25 else item for item in pieces]
 
-# ourTree = turnTree({"black":[2,2,2,2,2,3,4,7,7,7,7,7,"home","home","home"], "white":["bar","bar",16,16,16,16,18,18,18,20,20,20,22,24,24]},"white",[1,1,1,1])
+# ourTree = turnTree({'black': [1, 1, 1, 1, 1, 1, 2, 3, 3, 4, 6, 6, 10, 15, 16],
+#                     'white': [20, 21, 21, 22, 22, 22, 23, 23, 23, 23, 24, 24, 24, 24, 'home']},"white",[6,1])
+# print(ourTree.get_all_turns())
