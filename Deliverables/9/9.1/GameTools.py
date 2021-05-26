@@ -144,24 +144,25 @@ class Player:
         randomMove = moveSet[randIndex]
         return randomMove
 
-    def smart_move(self, board, moveSet):
+    def smart_move(self, board, moveSet, dice):
         answer = []
         for turn in moveSet:
-            newScore = self.score(deepcopy(turn), deepcopy(board))
+            newScore = self.score(deepcopy(turn), deepcopy(board), deepcopy(dice))
             answer.append([turn, newScore])
 
-        answer.sort(key=lambda pair: pair[1])
-        bestMove = answer[0]
+        answer.sort(key=lambda pair: pair[1], reverse=True)
+        print(answer)
+        bestMove = answer[0][0]
         return bestMove
 
-    def score(self, turn, board):
+    def score(self, turn, board, dice):
         score = 0
         oldBoard = board
         newBoard = deepcopy(board)
-        newBoard.moving(turn)
+        newBoard.moving(self.color, dice, turn)
         oldJSONBoard = oldBoard.getSolution()
         newJSONBoard = newBoard.getSolution()
-        if oldJSONBoard[self.otherColor] == newJSONBoard[self.otherColor]:
+        if oldJSONBoard[self.otherColor] != newJSONBoard[self.otherColor]:
             score += 1
         return score
 
@@ -169,9 +170,10 @@ class Player:
     def turn(self, board, dice, random):
         newboard = deepcopy(board)
         moveSet = self.generate_moves(newboard, deepcopy(dice))
+        print("this is moveSet: ", moveSet)
         if random:
             if self.strategy == "good":
-                moves = self.smart_move(moveSet, newboard)
+                moves = self.smart_move(newboard, moveSet, deepcopy(dice))
             else:
                 moves = self.random_move(moveSet)
             eatMove = deepcopy(moves)
