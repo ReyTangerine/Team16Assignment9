@@ -580,6 +580,7 @@ class turnTree:
         ### that are illegal but each move separately is legal (especially in homeboard condition)
         ### so this final check helps remove those additional edge cases.
         editedTurns = self.removeAllExtraneous(self.allTurns)
+        editedTurns = self.removeHomeHome(editedTurns)
         return editedTurns
 
     def removeAllExtraneous(self, turns):
@@ -596,6 +597,17 @@ class turnTree:
                 pass
         return newTurns
 
+    def removeHomeHome(self, turns):
+        for turnNo in range(len(turns)):
+            turn = turns[turnNo]
+            toBeRemoved = []
+            for moveNo in range(len(turn)):
+                if turn[moveNo][0] == "home" and turn[moveNo][0] == "home":
+                    toBeRemoved.append(turn[moveNo])
+            if len(toBeRemoved) != 0:
+                for removeIt in toBeRemoved:
+                    turns[turnNo].remove(removeIt)
+        return turns
 
     def get_tree_leaves(self, rootNode):
         if rootNode.children == []:

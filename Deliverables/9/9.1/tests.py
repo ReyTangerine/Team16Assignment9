@@ -64,6 +64,33 @@ class GameTest(unittest.TestCase):
         retVal = goodGame.turn([5, 3])
         self.assertEqual(retVal, [[10, 5], [7, 4]])
 
+
+    ### Debugging Games
+
+    ###### Originally was creating a ["home", "home"] move s.t. the turn would be:
+    ###### [[5, "home"], [5, "home"], [5, "home"], ["home", "home"]]
+    ###### FIX: We removed the ["home","home"] from turn directly
+
+    def test_input1_team20(self):
+        testBoard = {"black" : [5, 5, 5, "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home"],
+                     "white" : [20, "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home", "home"]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("black", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([5, 5, 5, 5])
+        self.assertEqual(retVal, [[5, "home"], [5, "home"], [5, "home"]])
+
+    ###### Originally was creating a "[]" turn
+    ###### FIX: We hardcoded one of the opening moves wrong. We went back in and fixed it (while checking the others AGAIN)
+    def test_input4_team27(self):
+        testBoard = {"black": [6, 6, 6, 6, 6, 8, 8, 8, 13, 13, 13, 13, 13, 24, 24],
+                     "white": [1, 1, 12, 12, 12, 12, 12, 17, 17, 17, 19, 19 ,19 ,19 ,19]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("white", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([4,5])
+        self.assertEqual(retVal, [[1, 5], [12, 17]])
+
     ### Game simulation, good vs rando
     def test_game_simulation(self):
         try:

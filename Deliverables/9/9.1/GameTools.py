@@ -165,6 +165,7 @@ class Player:
                 bestMove = self.random_move(moveSet)
         ### Else, we're in normal game
         else:
+
             for turn in moveSet:
                 newScore = self.score(deepcopy(turn), deepcopy(board), deepcopy(dice))
                 answer.append([turn, newScore])
@@ -237,11 +238,11 @@ class Player:
             elif ourDice == [6, 3]:
                 return [[1, 7], [12, 15]]
             elif ourDice == [5, 4]:
-                return [[1, 5], [12, 7]]
+                return [[1, 5], [12, 17]]
             elif ourDice == [6, 4]:
                 return [[1, 7], [12, 16]]
             elif ourDice == [6, 5]:
-                return [[1, 7],[7, 12]]
+                return [[1, 7], [7, 12]]
 
 
     # Bopping = 1/each piece
