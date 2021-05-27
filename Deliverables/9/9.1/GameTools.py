@@ -251,7 +251,6 @@ class Player:
     # if point in our homeboard, add weight moreso than a normal point, so total = .75/each point
 
     def score(self, turn, board, dice):
-        self.debuggingTurn = deepcopy(turn)
         BoppingWeight = 1
         canBeBoppedWeight = -0.5
         candlestickWeight = -0.3
@@ -266,10 +265,6 @@ class Player:
         newBoard.moving(self.color, dice, turn)
         oldJSONBoard = oldBoard.getSolution()
         newJSONBoard = newBoard.getSolution()
-
-        ### TODO: Fix this condition of endgame weirdness with all possible turns
-        if newJSONBoard is False:
-            return -10000000000000.0
 
         # Bopping Condition
         numBopped = newJSONBoard[self.otherColor].count("bar") - oldJSONBoard[self.otherColor].count("bar")

@@ -72,12 +72,12 @@ class GameTest(unittest.TestCase):
             goodGame.p2.set_strategy("rando")
             while goodGame.gameInProgress:
                 goodGame.turn(dice = False, turn = False)
-            self.assertEqual(self.winnerNameOfGame[1],"p1")
         except:
             print(goodGame.turnNum)
             print(goodGame.get_board())
             print("dice, ", goodGame.debuggingDice)
-            print("turn, ", goodGame.p2.debuggingTurn)
+
+        self.assertEqual(goodGame.winnerNameOfGame[1], "p1")
 
 
 if __name__== "__main__":

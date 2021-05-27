@@ -576,7 +576,26 @@ class turnTree:
                     move[1] = "home"
 
     def get_all_turns(self):
-        return(self.allTurns)
+        ### we remove extraneous since because we generate all turns move by move, there will be some turns
+        ### that are illegal but each move separately is legal (especially in homeboard condition)
+        ### so this final check helps remove those additional edge cases.
+        editedTurns = self.removeAllExtraneous(self.allTurns)
+        return editedTurns
+
+    def removeAllExtraneous(self, turns):
+        newTurns = []
+        for turn in turns:
+            newTurn = deepcopy(turn)
+            newBoard = deepcopy(self.board)
+            testBoard = Proxy_Backgammon_Board(newBoard)
+            testDie = deepcopy(self.die)
+            testBoard.new_moving(self.color, testDie, newTurn)
+            if testBoard.getSolution() is not False:
+                newTurns.append(turn)
+            else:
+                pass
+        return newTurns
+
 
     def get_tree_leaves(self, rootNode):
         if rootNode.children == []:
