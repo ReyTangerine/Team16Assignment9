@@ -1,5 +1,6 @@
 import unittest
 from GameTools import Game
+import time
 
 class GameTest(unittest.TestCase):
     def test_bop1(self):
@@ -62,7 +63,7 @@ class GameTest(unittest.TestCase):
         goodGame.set_player_fields("black", "player2")
         goodGame.set_board(testBoard)
         retVal = goodGame.turn([5, 3])
-        self.assertEqual(retVal, [[10, 5], [7, 4]])
+        self.assertEqual(retVal, [[7, 4], [10, 5]])
 
 
     ### Debugging Games
@@ -90,6 +91,32 @@ class GameTest(unittest.TestCase):
         goodGame.set_board(testBoard)
         retVal = goodGame.turn([4,5])
         self.assertEqual(retVal, [[1, 5], [12, 17]])
+
+    def test_input7_team5(self):
+        # start_time = time.time()
+        testBoard = {"black":[5,6,7,8,9,10,10,11,12,13,14,15,16,17,18],
+                      "white":[22,"home","home","home","home","home","home","home","home","home","home","home","home","home","home"]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("white", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([5,2])
+        # print("--- test_input7_team5: %s seconds ---" % (time.time() - start_time))
+        self.assertEqual(retVal, [[22,24],[24,"home"]])
+
+    def test_input4_team37(self):
+        # start_time = time.time()
+        testBoard = {
+            "black": [2, 4, 6, 8, 10, 10, 12, 14, 14, 16, 18, 20, 22, 24, "home"],
+            "white": [1, 3, 5, 7, 9, 9, 11, 13, 13, 15, 17, 19, 21, 23, "home"]
+        }
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("black", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([1,1,1,1])
+        # print("--- test_input4_team37: %s seconds ---" % (time.time() - start_time))
+        self.assertEqual(retVal, [[4, 3], [3, 2], [8, 7], [7, 6]])
+
+
 
     ### Game simulation, good vs rando
     def test_game_simulation(self):

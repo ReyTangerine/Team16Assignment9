@@ -1,4 +1,5 @@
 from copy import deepcopy
+import time
 
 class Real_Backgammon_Board:
 
@@ -530,14 +531,16 @@ class turnTree:
             self.home = 25
             self.bar = 0
         ### If there's 2 die, calculate children for two layers of nodes
+        # start_time = time.time()
         for childNode in self.rootNode.children:
             self.calculate_children(childNode)
             ### If there's 4 die, calculate children for two layers of nodes
-            if len(die) == 4:
+            if len(die) == 4 and len(childNode.children) > 0:
                 for grandchild in childNode.children:
                     self.calculate_children(grandchild)
                     for great_grandchild in grandchild.children:
                         self.calculate_children(great_grandchild)
+        # print("--- grandchild + great_grandchild: %s seconds ---" % (time.time() - start_time))
         ### If there's 4 die, calculate children for four layers of nodes
         self.get_tree_leaves(self.rootNode)
         ### Removing duplicates while preserving original turn order
@@ -638,16 +641,29 @@ class turnTree:
             pieces = currBoard.get("white")
             pieces = [25 if item == "home" else item for item in pieces]
             pieces = [0 if item == "bar" else item for item in pieces]
+            bar = 0
+            home = 25
             direction = 1
         elif self.color == "black":
             pieces = currBoard.get("black")
             pieces = [25 if item == "bar" else item for item in pieces]
             pieces = [0 if item == "home" else item for item in pieces]
+            bar = 25
+            home = 0
             direction = -1
         diceList = deepcopy(currNode.diceRemaining)
         seenTurn = []
+        seenPosition = []
         for dice in diceList:
+            if bar in pieces:
+                pieces = [bar]
+            if home in pieces:
+                pieces = [piece for piece in pieces if piece != home]
             for piece in pieces:
+                if piece in seenPosition:
+                    continue
+                else:
+                    seenPosition.append(piece)
                 currNodeCopy = deepcopy(currNode)
                 oldPos = piece
                 newPos = oldPos + (direction * dice)

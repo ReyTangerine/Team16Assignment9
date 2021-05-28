@@ -1,6 +1,7 @@
 from Backgammon_Class import Proxy_Backgammon_Board, turnTree
 from random import randint
 from copy import deepcopy
+import time
 
 # Game Object which takes in two strings and creates players from them. The game is played by calling turn() with
 # preexisting dice, or with random dice. It runs until the game ends, when it calls end_game() for both players.
@@ -146,7 +147,7 @@ class Player:
 
     def generate_moves(self, board, die):
         JSONBoard = deepcopy(board.getSolution())
-        ourTurnTree = turnTree(JSONBoard, self.color, deepcopy(die))
+        ourTurnTree = turnTree(JSONBoard, self.color, deepcopy(sorted(die)))
         moveSet = ourTurnTree.get_all_turns()
         return moveSet
 
@@ -327,10 +328,14 @@ class Player:
 
     def turn(self, board, dice, random):
         newboard = deepcopy(board)
+        # start_time = time.time()
         moveSet = self.generate_moves(newboard, deepcopy(dice))
+        # print("--- generate_moves: %s seconds ---" % (time.time() - start_time))
         if random:
             if self.strategy == "good":
+                # start_time = time.time()
                 moves = self.smart_move(newboard, moveSet, deepcopy(dice))
+                # print("--- smart_move: %s seconds ---" % (time.time() - start_time))
             else:
                 moves = self.random_move(moveSet)
             eatMove = deepcopy(moves)
