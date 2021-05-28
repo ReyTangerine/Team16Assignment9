@@ -116,6 +116,16 @@ class GameTest(unittest.TestCase):
         # print("--- test_input4_team37: %s seconds ---" % (time.time() - start_time))
         self.assertEqual(retVal, [[4, 3], [3, 2], [8, 7], [7, 6]])
 
+    def test_input1_team1(self):
+        testBoard = {"black" : ["bar", "bar", "bar", 7, 7, 7, 9, 9, 9, 9, 14, 14, 15, 16, 17],
+                     "white" : [2, 2, 2, 2, 4, 6, 6, 6, 6, 6, 8, 10, 20, 20, 20]}
+        goodGame = Game("player1", strategy="good")
+        goodGame.set_player_fields("black", "player2")
+        goodGame.set_board(testBoard)
+        retVal = goodGame.turn([5,6])
+        # print("--- test_input4_team37: %s seconds ---" % (time.time() - start_time))
+        self.assertEqual(retVal, [['bar', 19]])
+
 
 
     ### Game simulation, good vs rando

@@ -653,10 +653,10 @@ class turnTree:
             direction = -1
         diceList = deepcopy(currNode.diceRemaining)
         seenTurn = []
-        seenPosition = []
         for dice in diceList:
+            seenPosition = []
             if bar in pieces:
-                pieces = [bar]
+                pieces = [piece for piece in pieces if piece == bar]
             if home in pieces:
                 pieces = [piece for piece in pieces if piece != home]
             for piece in pieces:
